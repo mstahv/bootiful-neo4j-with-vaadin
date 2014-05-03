@@ -7,18 +7,15 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import java.util.ArrayList;
+import java.util.Collections;
 import javax.annotation.PostConstruct;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.conversion.EndResult;
 import org.vaadin.domain.Person;
 import org.vaadin.maddon.ListContainer;
 import org.vaadin.maddon.fields.MTextField;
 import org.vaadin.maddon.form.AbstractForm;
 import org.vaadin.maddon.layouts.MVerticalLayout;
-import org.vaadin.neo4j.PersonRepository;
+import org.vaadin.neo4j.PersonService;
 import org.vaadin.spring.UIScope;
 import org.vaadin.spring.VaadinComponent;
 import org.vaadin.spring.events.EventBus;
@@ -41,10 +38,7 @@ public class PersonForm extends AbstractForm<Person> {
     PersonFormController personFormController;
 
     @Autowired
-    PersonRepository personRepository;
-
-    @Autowired
-    GraphDatabaseService graphDatabase;
+    PersonService personService;
 
     @Autowired
     EventBus eventBus;
@@ -74,13 +68,9 @@ public class PersonForm extends AbstractForm<Person> {
     }
 
     private void populatePersons() {
-        try (Transaction tx = graphDatabase.beginTx()) {
-            EndResult<Person> findAll = personRepository.findAll();
-            ArrayList<Person> list = findAll.as(ArrayList.class);
-            teammates.setContainerDataSource( new ListContainer<>(Person.class, list));
-            teammates.setVisibleColumns("name");
-            tx.success();
-        }
+        teammates.setContainerDataSource(
+                new ListContainer(Person.class, personService.allAsList()), 
+                Collections.singletonList("name"));
     }
 
     @Override

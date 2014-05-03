@@ -1,16 +1,12 @@
 package org.vaadin.neo4j.vaadin;
 
-import java.util.ArrayList;
 import javax.annotation.PostConstruct;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.conversion.EndResult;
 import org.springframework.stereotype.Component;
 import org.vaadin.domain.Person;
 import org.vaadin.maddon.fields.MTable;
 import org.vaadin.maddon.layouts.MVerticalLayout;
-import org.vaadin.neo4j.PersonRepository;
+import org.vaadin.neo4j.PersonService;
 import org.vaadin.spring.UIScope;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.EventBusListener;
@@ -20,10 +16,7 @@ import org.vaadin.spring.events.EventBusListener;
 class PersonView extends MVerticalLayout {
 
     @Autowired
-    PersonRepository personRepository;
-
-    @Autowired
-    GraphDatabaseService graphDatabase;
+    PersonService personService;
 
     @Autowired
     PersonForm personForm;
@@ -61,14 +54,7 @@ class PersonView extends MVerticalLayout {
     }
 
     void listPersons() {
-        /**
-         * Looping through EndResult, so handle transaction here.
-         */
-        try (Transaction tx = graphDatabase.beginTx()) {
-            final EndResult<Person> findAll = personRepository.findAll();
-            listing.setBeans(findAll.as(ArrayList.class));
-            tx.success();
-        }
+        listing.setBeans(personService.allAsList());
     }
 
 }

@@ -15,9 +15,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableNeo4jRepositories("org.vaadin.neo4j")
+@EnableTransactionManagement
 public class Neo4JConf extends Neo4jConfiguration {
 
     private static final String DBNAME = "bootiful-neo4j-with-vaadin.db";
@@ -36,6 +38,11 @@ public class Neo4JConf extends Neo4jConfiguration {
     @Bean
     GraphDatabaseService graphDatabaseService() {
         return new GraphDatabaseFactory().newEmbeddedDatabase(DBNAME);
+    }
+    
+    @Bean
+    PersonService personService() {
+        return new PersonService();
     }
 
     @Autowired
