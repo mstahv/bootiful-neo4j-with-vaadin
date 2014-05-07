@@ -7,7 +7,6 @@ import javax.annotation.PostConstruct;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.neo4j.conversion.EndResult;
 import org.springframework.stereotype.Component;
 import org.vaadin.diagrambuilder.DiagramBuilder;
 import org.vaadin.diagrambuilder.DiagramStateEvent;
@@ -17,6 +16,7 @@ import org.vaadin.diagrambuilder.Transition;
 import org.vaadin.domain.Person;
 import org.vaadin.maddon.layouts.MVerticalLayout;
 import org.vaadin.neo4j.PersonRepository;
+import org.vaadin.neo4j.PersonService;
 import org.vaadin.spring.UIScope;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.EventBusListener;
@@ -28,6 +28,9 @@ class PersonVisualView extends MVerticalLayout {
 
     @Autowired
     PersonRepository personRepository;
+
+    @Autowired
+    PersonService personService;
 
     @Autowired
     GraphDatabaseService graphDatabase;
@@ -68,7 +71,9 @@ class PersonVisualView extends MVerticalLayout {
 
             @Override
             public void onEvent(org.vaadin.spring.events.Event<Object> event) {
-                drawState();
+                if(event.getPayload().equals("DB updated")) {
+                    drawState();
+                }
             }
         });
     }
@@ -76,24 +81,18 @@ class PersonVisualView extends MVerticalLayout {
     private void drawState() {
         ArrayList<Node> nodes = new ArrayList<>();
         ArrayList<Transition> transitions = new ArrayList<>();
-        /**
-         * Looping through EndResult, so handle transaction here.
-         */
-        try (Transaction tx = graphDatabase.beginTx()) {
 
-            EndResult<Person> allPersons = personRepository.findAll();
+        List<Person> allAsList = personService.allAsList();
 
-            for (final Person person : allPersons) {
-                nodes.add(new Node(person.getName(), "condition", person.
-                        getX(),
-                        person.getY()));
+        for (Person person : allAsList) {
+            nodes.add(new Node(person.getName(), "condition", person.
+                    getX(),
+                    person.getY()));
 
-                for (Person mate : person.getTeammates()) {
-                    transitions.add(new Transition(person.getName(), mate.
-                            getName(), "worksWith"));
-                }
+            for (Person mate : person.getTeammates()) {
+                transitions.add(new Transition(person.getName(), mate.
+                        getName(), "worksWith"));
             }
-            tx.success();
         }
 
         diagramBuilder.setAvailableFields(new NodeType(

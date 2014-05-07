@@ -23,7 +23,7 @@ public class PersonFormController implements SavedHandler<Person>,
 
     @Override
     public void onSave(Person entity) {
-        personService.saveWithConnections(entity);
+        personService.save(entity);
         eventBus.publish(EventScope.UI, this, "DB updated");
     }
 

@@ -61,7 +61,9 @@ public class PersonForm extends AbstractForm<Person> {
 
             @Override
             public void onEvent(org.vaadin.spring.events.Event<Object> event) {
-                populatePersons();
+                if(event.getPayload().equals("DB updated")) {
+                    populatePersons();
+                }
             }
         });
 

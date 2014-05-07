@@ -1,6 +1,7 @@
 package org.vaadin.neo4j.vaadin;
 
 import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vaadin.domain.Person;
@@ -48,7 +49,9 @@ class PersonView extends MVerticalLayout {
 
             @Override
             public void onEvent(org.vaadin.spring.events.Event<Object> event) {
-                listPersons();
+                if(event.getPayload().equals("DB updated")) {
+                    listPersons();
+                }
             }
         });
     }

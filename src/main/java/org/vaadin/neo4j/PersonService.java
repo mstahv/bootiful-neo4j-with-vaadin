@@ -20,15 +20,8 @@ public class PersonService {
         return personRepository.findAll(new Sort("name")).as(ArrayList.class);
     }
 
-    public void saveWithConnections(Person entity) {
-        Set<Person> teammates = entity.getTeammates();
-        Person saved = personRepository.save(entity);
-        // TODO figure out why relations needs to be set on "fresh" object and
-        // resaved, must be doing something wrong. Without this hack all 
-        // relations are lost.
-        saved.setTeammates(teammates);
-        personRepository.save(saved);
-
+    public void save(Person entity) {
+        personRepository.save(entity);
     }
 
 }
