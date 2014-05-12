@@ -45,13 +45,12 @@ class PersonView extends MVerticalLayout {
     @PostConstruct
     void init() {
         listPersons();
-        eventBus.subscribe(new EventBusListener<Object>() {
+        eventBus.subscribe(new EventBusListener<PersonsModified>() {
 
             @Override
-            public void onEvent(org.vaadin.spring.events.Event<Object> event) {
-                if(event.getPayload().equals("DB updated")) {
-                    listPersons();
-                }
+            public void onEvent(
+                    org.vaadin.spring.events.Event<PersonsModified> event) {
+                listPersons();
             }
         });
     }

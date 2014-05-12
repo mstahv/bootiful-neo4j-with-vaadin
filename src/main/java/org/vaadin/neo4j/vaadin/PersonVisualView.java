@@ -67,13 +67,12 @@ class PersonVisualView extends MVerticalLayout {
     @PostConstruct
     public void init() {
         drawState();
-        eventBus.subscribe(new EventBusListener<Object>() {
+        eventBus.subscribe(new EventBusListener<PersonsModified>() {
 
             @Override
-            public void onEvent(org.vaadin.spring.events.Event<Object> event) {
-                if(event.getPayload().equals("DB updated")) {
-                    drawState();
-                }
+            public void onEvent(
+                    org.vaadin.spring.events.Event<PersonsModified> event) {
+                drawState();
             }
         });
     }
@@ -131,7 +130,7 @@ class PersonVisualView extends MVerticalLayout {
             tx.success();
         }
 
-        eventBus.publish(EventScope.UI, this, "DB updated");
+        eventBus.publish(EventScope.UI, this, new PersonsModified());
     }
 
 }

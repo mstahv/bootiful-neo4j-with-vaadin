@@ -8,10 +8,12 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import java.util.Collections;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.domain.Person;
 import org.vaadin.maddon.ListContainer;
+import org.vaadin.maddon.fields.MTable;
 import org.vaadin.maddon.fields.MTextField;
 import org.vaadin.maddon.form.AbstractForm;
 import org.vaadin.maddon.layouts.MVerticalLayout;
@@ -20,6 +22,7 @@ import org.vaadin.spring.UIScope;
 import org.vaadin.spring.VaadinComponent;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.EventBusListener;
+import org.vaadin.spring.events.EventBusListenerMethod;
 
 @UIScope
 @VaadinComponent
@@ -32,7 +35,7 @@ public class PersonForm extends AbstractForm<Person> {
     TextField y = new MTextField("y");
 
     // Select to another entity, options must be populated!!
-    Table teammates = new Table("Teammates");
+    Table teammates = new Table();
 
     @Autowired
     PersonFormController personFormController;
@@ -56,14 +59,13 @@ public class PersonForm extends AbstractForm<Person> {
         teammates.setPageLength(6);
 
         populatePersons();
-        
-        eventBus.subscribe(new EventBusListener<Object>(){
+
+        eventBus.subscribe(new EventBusListener<PersonsModified>() {
 
             @Override
-            public void onEvent(org.vaadin.spring.events.Event<Object> event) {
-                if(event.getPayload().equals("DB updated")) {
-                    populatePersons();
-                }
+            public void onEvent(
+                    org.vaadin.spring.events.Event<PersonsModified> event) {
+                populatePersons();
             }
         });
 
@@ -71,7 +73,7 @@ public class PersonForm extends AbstractForm<Person> {
 
     private void populatePersons() {
         teammates.setContainerDataSource(
-                new ListContainer(Person.class, personService.allAsList()), 
+                new ListContainer(Person.class, personService.allAsList()),
                 Collections.singletonList("name"));
     }
 

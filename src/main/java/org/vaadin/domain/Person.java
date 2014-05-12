@@ -14,7 +14,13 @@ public class Person {
 
     @GraphId
     Long id;
+    
     private String name;
+    
+    @RelatedTo(type = "TEAMMATE", direction = Direction.OUTGOING)
+    @Fetch
+    public Set<Person> teammates;
+
     private int x;
     private int y;
 
@@ -26,9 +32,6 @@ public class Person {
         this.x = x;
         this.y = y;
     }
-
-    @RelatedTo(type = "TEAMMATE", direction = Direction.OUTGOING)
-    public @Fetch Set<Person> teammates;
 
     public void worksWith(Person person) {
         if (teammates == null) {
@@ -84,7 +87,7 @@ public class Person {
 
     @Override
     public int hashCode() {
-        if(id != null) {
+        if (id != null) {
             return id.hashCode();
         }
         return super.hashCode();
