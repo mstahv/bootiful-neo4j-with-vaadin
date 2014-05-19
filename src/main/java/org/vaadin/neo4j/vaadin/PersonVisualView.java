@@ -95,7 +95,7 @@ class PersonVisualView extends MVerticalLayout {
         }
 
         diagramBuilder.setAvailableFields(new NodeType(
-                "diagram-node-condition-icon", "Condition",
+                "diagram-node-condition-icon", "Person",
                 "condition"));
         diagramBuilder.setFields(nodes.toArray(new Node[0]));
         diagramBuilder.setTransitions(transitions.toArray(new Transition[0]));
