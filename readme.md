@@ -13,7 +13,5 @@ There is also a bit hackish "visual editor" mode on the other tab that uses [All
 ### TODO
 
  * Improve diagram-builder to support identifiers, now updates from there rebuild the whole DB content.
- * Change relations between Persons to contain properties to better illustrate Neo4J goodies
- * Add an other entity type and relations to it, e.g. WorkGroup or Company
 
 
