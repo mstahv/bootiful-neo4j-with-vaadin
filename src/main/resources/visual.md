@@ -1,0 +1,1 @@
+This is a view that uses [experimental add-on](http://vaadin.com/addon/diagram-builder) that wraps [AlloYUI Diagram Builder](http://alloyui.com/examples/diagram-builder/) for server side Vaadin development. Due to its current limitations, ATM, saving will re-create the whole graph from browser state into DB.

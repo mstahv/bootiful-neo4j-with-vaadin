@@ -1,13 +1,15 @@
 package org.vaadin.neo4j.vaadin;
 
+import org.vaadin.neo4j.vaadin.events.PersonsModified;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vaadin.domain.Person;
 import org.vaadin.maddon.fields.MTable;
+import org.vaadin.maddon.label.RichText;
 import org.vaadin.maddon.layouts.MVerticalLayout;
-import org.vaadin.neo4j.PersonService;
+import org.vaadin.neo4j.AppService;
 import org.vaadin.spring.UIScope;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.EventBusListener;
@@ -17,7 +19,7 @@ import org.vaadin.spring.events.EventBusListener;
 class PersonView extends MVerticalLayout {
 
     @Autowired
-    PersonService personService;
+    AppService personService;
 
     @Autowired
     PersonForm personForm;
@@ -29,7 +31,7 @@ class PersonView extends MVerticalLayout {
             withProperties("name", "x", "y");
 
     public PersonView() {
-        setCaption("Person listing");
+        setCaption("Persons");
         listing.addMValueChangeListener(event -> {
             if (event.getValue() != null) {
                 personForm.setEntity(event.getValue());
@@ -37,7 +39,10 @@ class PersonView extends MVerticalLayout {
             }
         });
 
-        addComponents(listing);
+        addComponents(
+                new RichText().withMarkDownResource("/personsview.md"),
+                listing
+        );
         expand(listing).withFullHeight();
 
     }

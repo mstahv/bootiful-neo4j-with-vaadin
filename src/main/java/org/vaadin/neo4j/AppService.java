@@ -7,17 +7,24 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.domain.Person;
+import org.vaadin.domain.Project;
 
 @Service
 @Transactional
-public class PersonService {
+public class AppService {
 
     @Autowired
     PersonRepository personRepository;
 
-    
+    @Autowired
+    ProjectRepository projectRepository;
+
     public List<Person> allAsList() {
         return personRepository.findAll(new Sort("name")).as(ArrayList.class);
+    }
+
+    public List<Project> listAllProjects() {
+        return projectRepository.findAll(new Sort("projectName")).as(ArrayList.class);
     }
 
     public void save(Person entity) {

@@ -5,103 +5,52 @@ import java.util.Set;
 
 import org.neo4j.graphdb.Direction;
 import org.springframework.data.neo4j.annotation.Fetch;
-import org.springframework.data.neo4j.annotation.GraphId;
 import org.springframework.data.neo4j.annotation.NodeEntity;
 import org.springframework.data.neo4j.annotation.RelatedTo;
 
 @NodeEntity
-public class Person {
+public class Person extends AbstractPositionableEntity {
 
-    @GraphId
-    Long id;
-    
     private String name;
     
-    @RelatedTo(type = "TEAMMATE", direction = Direction.OUTGOING)
+    @RelatedTo(type = "PROJECT", direction = Direction.OUTGOING)
     @Fetch
-    public Set<Person> teammates;
-
-    private int x;
-    private int y;
+    public Set<Project> projects;
 
     public Person() {
     }
 
     public Person(String name, int x, int y) {
+        super(x,y);
         this.name = name;
-        this.x = x;
-        this.y = y;
     }
 
-    public void worksWith(Person person) {
-        if (teammates == null) {
-            teammates = new HashSet<>();
+    public void worksIn(Project person) {
+        if (projects == null) {
+            projects = new HashSet<>();
         }
-        teammates.add(person);
+        projects.add(person);
     }
 
     public String getName() {
         return name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
 
-    public int getX() {
-        return x;
+    public Set<Project> getProjects() {
+        return projects;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public Set<Person> getTeammates() {
-        return teammates;
-    }
-
-    public void setTeammates(Set<Person> teammates) {
-        this.teammates = teammates;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (id != null && (obj instanceof Person)) {
-            Person other = (Person) obj;
-            return id.equals(other.id);
-        }
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        if (id != null) {
-            return id.hashCode();
-        }
-        return super.hashCode();
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
     }
 
     @Override
     public String toString() {
-        String results = name + "'s teammates include\n";
-        if (teammates != null) {
-            for (Person person : teammates) {
-                results += "\t- " + person.name + "\n";
-            }
-        }
-        return results;
+        return "Person: "+ name;
     }
 
 }

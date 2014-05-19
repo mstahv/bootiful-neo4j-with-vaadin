@@ -1,11 +1,12 @@
 package org.vaadin.neo4j.vaadin;
 
+import org.vaadin.neo4j.vaadin.events.PersonsModified;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vaadin.domain.Person;
 import org.vaadin.maddon.form.AbstractForm;
 import org.vaadin.maddon.form.AbstractForm.SavedHandler;
-import org.vaadin.neo4j.PersonService;
+import org.vaadin.neo4j.AppService;
 import org.vaadin.spring.UIScope;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.EventScope;
@@ -16,7 +17,7 @@ public class PersonFormController implements SavedHandler<Person>,
         AbstractForm.ResetHandler<Person> {
 
     @Autowired
-    PersonService personService;
+    AppService personService;
 
     @Autowired
     EventBus eventBus;

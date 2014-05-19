@@ -16,13 +16,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.config.EnableNeo4jRepositories;
 import org.springframework.data.neo4j.config.Neo4jConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.vaadin.domain.Project;
 
 @Configuration
 @EnableNeo4jRepositories("org.vaadin.neo4j")
 @EnableTransactionManagement
 public class Neo4JConf extends Neo4jConfiguration {
 
-    private static final String DBNAME = "bootiful-neo4j-with-vaadin.db";
+    private static final String DBNAME = System.getProperty("user.home") + "/bootiful-neo4j-with-vaadin.db";
 
     public Neo4JConf() {
         setBasePackage("org.vaadin.domain");
@@ -41,12 +42,15 @@ public class Neo4JConf extends Neo4jConfiguration {
     }
     
     @Bean
-    PersonService personService() {
-        return new PersonService();
+    AppService personService() {
+        return new AppService();
     }
 
     @Autowired
     PersonRepository personRepository;
+
+    @Autowired
+    ProjectRepository projectRepository;
 
     @Autowired
     GraphDatabaseService graphDatabase;
@@ -57,8 +61,11 @@ public class Neo4JConf extends Neo4jConfiguration {
     @PostConstruct
     public void initData() {
         Person greg = new Person("Greg", 50, 50);
-        Person roy = new Person("Roy", 250, 250);
+        Person roy = new Person("Roy", 50, 150);
         Person craig = new Person("Craig", 50, 250);
+        
+        Project maintenance = new Project("Maintenance", 450, 100);
+        Project featureX = new Project("Feature 'X'", 450, 250);
 
         System.out.println("Before linking up with Neo4j...");
         for (Person person : new Person[]{greg, roy, craig}) {
@@ -67,18 +74,21 @@ public class Neo4JConf extends Neo4jConfiguration {
 
         try (Transaction tx = graphDatabase.beginTx()) {
             personRepository.save(greg);
-            personRepository.save(roy);
-            personRepository.save(craig);
+            roy = personRepository.save(roy);
+            craig = personRepository.save(craig);
+            maintenance = projectRepository.save(maintenance);
+            featureX = projectRepository.save(featureX);
             
             greg = personRepository.findByName(greg.getName());
-            greg.worksWith(roy);
-            greg.worksWith(craig);
+            greg.worksIn(maintenance);
+            greg.worksIn(featureX);
             personRepository.save(greg);
 
-            roy = personRepository.findByName(roy.getName());
-            roy.worksWith(craig);
-            // We already know that roy works with greg
+            roy.worksIn(featureX);
             personRepository.save(roy);
+            
+            craig.worksIn(featureX);
+            personRepository.save(craig);
 
             tx.success();
         }

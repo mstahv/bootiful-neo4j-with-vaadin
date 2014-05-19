@@ -28,12 +28,14 @@ class MainUI extends UI {
     @Autowired
     PersonView personView;
     @Autowired
-    PersonVisualView personVisualView;
+    ProjectView projectView;
+    @Autowired
+    VisualEditor visualEditor;
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         
-        TabSheet tabSheet = new TabSheet(personView, personVisualView);
+        TabSheet tabSheet = new TabSheet(personView, projectView, visualEditor);
         tabSheet.setSizeFull();
         setContent(
                 new MVerticalLayout(

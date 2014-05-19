@@ -8,40 +8,38 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import java.util.Collections;
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.domain.Person;
+import org.vaadin.domain.Project;
 import org.vaadin.maddon.ListContainer;
-import org.vaadin.maddon.fields.MTable;
 import org.vaadin.maddon.fields.MTextField;
 import org.vaadin.maddon.form.AbstractForm;
 import org.vaadin.maddon.layouts.MVerticalLayout;
-import org.vaadin.neo4j.PersonService;
+import org.vaadin.neo4j.AppService;
+import org.vaadin.neo4j.vaadin.events.ProjectsModified;
 import org.vaadin.spring.UIScope;
 import org.vaadin.spring.VaadinComponent;
 import org.vaadin.spring.events.EventBus;
 import org.vaadin.spring.events.EventBusListener;
-import org.vaadin.spring.events.EventBusListenerMethod;
 
 @UIScope
 @VaadinComponent
 public class PersonForm extends AbstractForm<Person> {
 
-    TextField name = new MTextField("name");
+    TextField name = new MTextField("Name");
 
     TextField x = new MTextField("x");
 
     TextField y = new MTextField("y");
 
-    // Select to another entity, options must be populated!!
-    Table teammates = new Table();
+    Table projects = new Table("Projects");
 
     @Autowired
     PersonFormController personFormController;
 
     @Autowired
-    PersonService personService;
+    AppService service;
 
     @Autowired
     EventBus eventBus;
@@ -54,26 +52,26 @@ public class PersonForm extends AbstractForm<Person> {
         setSavedHandler(personFormController);
         setResetHandler(personFormController);
 
-        teammates.setMultiSelect(true);
-        teammates.setSelectable(true);
-        teammates.setPageLength(6);
+        projects.setMultiSelect(true);
+        projects.setSelectable(true);
+        projects.setPageLength(6);
 
-        populatePersons();
+        populateProjects();
 
-        eventBus.subscribe(new EventBusListener<PersonsModified>() {
+        eventBus.subscribe(new EventBusListener<ProjectsModified>() {
 
             @Override
             public void onEvent(
-                    org.vaadin.spring.events.Event<PersonsModified> event) {
-                populatePersons();
+                    org.vaadin.spring.events.Event<ProjectsModified> event) {
+                populateProjects();
             }
         });
 
     }
 
-    private void populatePersons() {
-        teammates.setContainerDataSource(
-                new ListContainer(Person.class, personService.allAsList()),
+    private void populateProjects() {
+        projects.setContainerDataSource(
+                new ListContainer(Project.class, service.listAllProjects()),
                 Collections.singletonList("name"));
     }
 
@@ -84,7 +82,7 @@ public class PersonForm extends AbstractForm<Person> {
                         name,
                         x,
                         y,
-                        teammates
+                        projects
                 ),
                 getToolbar()
         );

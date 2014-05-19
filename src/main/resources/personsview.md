@@ -1,0 +1,1 @@
+An example view that lists Person nodes in a [Table](https://vaadin.com/book/-/page/components.table.html). A selected row is opened for editing into a floating [Window](https://vaadin.com/book/vaadin7/-/page/layout.sub-window.html).
