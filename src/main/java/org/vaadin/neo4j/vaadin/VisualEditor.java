@@ -1,5 +1,6 @@
 package org.vaadin.neo4j.vaadin;
 
+import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import java.util.ArrayList;
@@ -16,18 +17,19 @@ import org.vaadin.diagrambuilder.NodeType;
 import org.vaadin.diagrambuilder.Transition;
 import org.vaadin.domain.Person;
 import org.vaadin.domain.Project;
-import org.vaadin.maddon.label.RichText;
-import org.vaadin.maddon.layouts.MHorizontalLayout;
-import org.vaadin.maddon.layouts.MVerticalLayout;
 import org.vaadin.neo4j.AppService;
 import org.vaadin.neo4j.PersonRepository;
 import org.vaadin.neo4j.ProjectRepository;
+import org.vaadin.neo4j.vaadin.events.PersonsChangedNotifier;
 import org.vaadin.neo4j.vaadin.events.PersonsModified;
+import org.vaadin.neo4j.vaadin.events.ProjectsChangedNotifier;
 import org.vaadin.neo4j.vaadin.events.ProjectsModified;
-import org.vaadin.spring.UIScope;
-import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.events.EventBusListener;
-import org.vaadin.spring.events.EventScope;
+//import org.vaadin.spring.events.EventBus;
+//import org.vaadin.spring.events.EventBusListener;
+//import org.vaadin.spring.events.EventScope;
+import org.vaadin.viritin.label.RichText;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 @Component
 @UIScope
@@ -45,8 +47,13 @@ class VisualEditor extends MVerticalLayout {
     GraphDatabaseService graphDatabase;
 
     @Autowired
-    EventBus eventBus;
+    ProjectsChangedNotifier projectsEventBus;
 
+    @Autowired
+    PersonsChangedNotifier personEventBus;
+
+//    @Autowired
+//    EventBus.SessionEventBus eventBus;
     DiagramBuilder diagramBuilder = new DiagramBuilder();
 
     Button saveButton = new Button("Save back to Neo4J DB",
@@ -79,22 +86,25 @@ class VisualEditor extends MVerticalLayout {
     @PostConstruct
     public void init() {
         drawState();
-        eventBus.subscribe(new EventBusListener<PersonsModified>() {
-
-            @Override
-            public void onEvent(
-                    org.vaadin.spring.events.Event<PersonsModified> event) {
-                drawState();
-            }
-        });
-        eventBus.subscribe(new EventBusListener<ProjectsModified>() {
-
-            @Override
-            public void onEvent(
-                    org.vaadin.spring.events.Event<ProjectsModified> event) {
-                drawState();
-            }
-        });
+        personEventBus.subscribe(this::drawState);
+        projectsEventBus.subscribe(this::drawState);
+        
+//        eventBus.subscribe(new EventBusListener<PersonsModified>() {
+//
+//            @Override
+//            public void onEvent(
+//                    org.vaadin.spring.events.Event<PersonsModified> event) {
+//                drawState();
+//            }
+//        });
+//        eventBus.subscribe(new EventBusListener<ProjectsModified>() {
+//
+//            @Override
+//            public void onEvent(
+//                    org.vaadin.spring.events.Event<ProjectsModified> event) {
+//                drawState();
+//            }
+//        });
     }
 
     /**
@@ -194,9 +204,12 @@ class VisualEditor extends MVerticalLayout {
 
             tx.success();
         }
+        
+        projectsEventBus.onEvent();
+        personEventBus.onEvent();
 
-        eventBus.publish(EventScope.UI, this, new PersonsModified());
-        eventBus.publish(EventScope.UI, this, new ProjectsModified());
+//        eventBus.publish(EventScope.UI, this, new PersonsModified());
+//        eventBus.publish(EventScope.UI, this, new ProjectsModified());
     }
 
 }

@@ -1,18 +1,19 @@
 package org.vaadin.neo4j.vaadin;
 
+import com.vaadin.spring.annotation.UIScope;
 import org.vaadin.neo4j.vaadin.events.PersonsModified;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.vaadin.domain.Person;
-import org.vaadin.maddon.fields.MTable;
-import org.vaadin.maddon.label.RichText;
-import org.vaadin.maddon.layouts.MVerticalLayout;
 import org.vaadin.neo4j.AppService;
-import org.vaadin.spring.UIScope;
-import org.vaadin.spring.events.EventBus;
-import org.vaadin.spring.events.EventBusListener;
+import org.vaadin.neo4j.vaadin.events.PersonsChangedNotifier;
+//import org.vaadin.spring.events.EventBus;
+//import org.vaadin.spring.events.EventBusListener;
+import org.vaadin.viritin.fields.MTable;
+import org.vaadin.viritin.label.RichText;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 @Component
 @UIScope
@@ -25,7 +26,9 @@ class PersonView extends MVerticalLayout {
     PersonForm personForm;
 
     @Autowired
-    EventBus eventBus;
+    PersonsChangedNotifier eventBus;
+//    @Autowired
+//    EventBus.SessionEventBus eventBus;
 
     MTable<Person> listing = new MTable<>(Person.class).
             withProperties("name", "x", "y");
@@ -50,17 +53,18 @@ class PersonView extends MVerticalLayout {
     @PostConstruct
     void init() {
         listPersons();
-        eventBus.subscribe(new EventBusListener<PersonsModified>() {
-
-            @Override
-            public void onEvent(
-                    org.vaadin.spring.events.Event<PersonsModified> event) {
-                listPersons();
-            }
-        });
+        eventBus.subscribe(this::listPersons);
+//        eventBus.subscribe(new EventBusListener<PersonsModified>() {
+//
+//            @Override
+//            public void onEvent(
+//                    org.vaadin.spring.events.Event<PersonsModified> event) {
+//                listPersons();
+//            }
+//        });
     }
 
-    void listPersons() {
+    public void listPersons() {
         listing.setBeans(personService.allAsList());
     }
 
